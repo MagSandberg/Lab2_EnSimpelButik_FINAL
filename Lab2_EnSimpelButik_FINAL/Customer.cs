@@ -28,9 +28,9 @@ public class Customer
         var customerCart = string.Empty;
         foreach (var p in Cart)
         {
-            customerCart += $"[{p.Name}] | ".ToString();
-            customerCart += $"{p.Qty}".ToString();
+            customerCart += $"{p.Name}, ".ToString();
+            customerCart += $"{p.Qty} st / ".ToString();
         }
-        return $"Namn: {Name} | Lösenord: {Password} | Kundvagn: {customerCart}";
+        return $"\nNamn: {Name}\nLösenord: {Password}\nKundvagn: {customerCart}";
     }
 }

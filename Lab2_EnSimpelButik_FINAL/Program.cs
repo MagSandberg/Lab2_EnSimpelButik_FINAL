@@ -68,9 +68,10 @@ void StoreMenu()
         while (Bool.WrongKey)
         {
             Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
+            Console.WriteLine(activeUser);
+
             keyPressShopMenu = Console.ReadKey();
             Console.CursorLeft = 0;
-
             if (!cK.Contains(keyPressShopMenu.Key))
             {
                 Console.Clear();
@@ -173,7 +174,7 @@ void StoreMenu()
                     Console.Clear();
                     Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
                     ChangeTextColorMenuShop("Green.Kassa");
-
+                    
                     Console.WriteLine("* Dina varor * \n");
                     StoreMethod.PrintCart(activeUser); //Skriver ut kundvagnen
                     StoreMethod.SpecialDiscount(activeUser); //Skriver ut totalpriset och rabatt om kunden uppnått kraven

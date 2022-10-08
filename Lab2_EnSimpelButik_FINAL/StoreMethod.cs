@@ -67,4 +67,58 @@ public class StoreMethod
             Console.WriteLine($"{addProd} {p.Name} / Pris: {p.Price}");
         }
     }
+
+    public static void SpecialDiscount(Customer cust)
+    {
+        double totalSum = 0;
+        double totalDiscount = 0;
+        double newTotalSum = 0;
+        var discountRank = string.Empty;
+        var discountPercent = 0;
+        bool discount = false;
+        foreach (var p in cust.Cart)
+        {
+            totalSum += p.Qty * p.Price;
+        }
+
+        if (totalSum > 200 && totalSum < 500)
+        {
+            totalDiscount = 0.05 * totalSum;
+            newTotalSum = totalSum - totalDiscount;
+            discountRank = "Brons";
+            discountPercent = 5;
+            discount = true;
+        }
+        else if (totalSum > 500 && totalSum < 1000)
+        {
+            totalDiscount = 0.1 * totalSum;
+            newTotalSum = totalSum - totalDiscount;
+            discountRank = "Silver";
+            discountPercent = 10;
+            discount = true;
+        }
+        else if (totalSum > 1000)
+        {
+            totalDiscount = 0.15 * totalSum;
+            newTotalSum = totalSum - totalDiscount;
+            discountRank = "Guld";
+            discountPercent = 15;
+            discount = true;
+        }
+        else
+        {
+            newTotalSum = totalSum;
+        }
+
+        if (discount)
+        {
+            Console.WriteLine($"\nSom {discountRank}kund får du {discountPercent}% rabatt!");
+            Console.WriteLine($"\nDin rabatt: {Math.Round(totalDiscount)}:-");
+            Console.WriteLine($"Du betalar endast {string.Format("{0:0.00}", Math.Round(newTotalSum))}:-");
+        }
+        else
+        {
+            Console.WriteLine($"Pris för din beställning: {string.Format("{0:0.00}", totalSum)}:-");
+        }
+    }
 }

@@ -1,12 +1,16 @@
 ﻿using Lab2_EnSimpelButik_FINAL;
+using System.Reflection.Metadata;
 
 var db = new DataSource(); //Instansierar produkt-"databas"
 Login userLogin = new(); //Loggar in en användare
 Customer? activeUser = null; //Instansierar en kund
 
+//Tillåtna tangenter under Loginmenyn
+System.ConsoleKey[] keyLogin = { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.Q };
 //Tillåtna tangenttryckningar i programmet
 System.ConsoleKey[] cK = { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.D3, ConsoleKey.D4, ConsoleKey.D5, ConsoleKey.D6, ConsoleKey.Q };
-var keyPress = new ConsoleKeyInfo(); //Switch-navigering
+
+ConsoleKeyInfo keyPress; //Switch-navigering
 var keyPressShopMenu = new ConsoleKeyInfo();
 var keyPressProd = new ConsoleKeyInfo();
 
@@ -24,8 +28,8 @@ void LoginMenu()
         keyPress = Console.ReadKey();
         Console.CursorLeft = 0;
 
-        System.ConsoleKey[] cK = { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.D3, ConsoleKey.Q };
-        if (!cK.Contains(keyPress.Key))
+
+        if (!keyLogin.Contains(keyPress.Key))
         {
             Console.Clear();
             Console.Write("Fel inmatning: ");
@@ -39,20 +43,16 @@ void LoginMenu()
             switch (keyPress.Key)
             {
                 case ConsoleKey.D1:
-
                     ChangeTextColorLogin("Green.Login");
                     userLogin.LoginFields(); //Namn och lösenord
                     activeUser = userLogin.ReturnUserIfExists(db);
                     break;
                 case ConsoleKey.D2:
-
                     ChangeTextColorLogin("Green.Register");
                     userLogin.LoginFields(); //Namn och lösenord
-                    db.Customer.Add(new Customer(userLogin.Name, userLogin.Password)); //Sparar kund till lista
+                    db.Customer.Add(new Customer(userLogin.Name!, userLogin.Password!)); //Sparar kund till lista
                     break;
-
                 case ConsoleKey.Q:
-
                     ChangeTextColorLogin("Green.Quit");
                     Login.VerifyQuit(); //Verifierar om användaren vill stänga programmet
                     Console.Clear();
@@ -68,10 +68,9 @@ void StoreMenu()
         while (Bool.WrongKey)
         {
             Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
-            Console.WriteLine(activeUser);
-
             keyPressShopMenu = Console.ReadKey();
             Console.CursorLeft = 0;
+
             if (!cK.Contains(keyPressShopMenu.Key))
             {
                 Console.Clear();
@@ -80,6 +79,7 @@ void StoreMenu()
                 ChangeTextColorMenuShop("Red");
                 Console.WriteLine("\nVänligen välj 1, 2, 3 eller Q för att logga ut.\n");
                 keyPressShopMenu = Console.ReadKey();
+                Console.Clear();
             }
             else
             {
@@ -103,15 +103,13 @@ void StoreMenu()
                     keyPressProd = Console.ReadKey();
 
                     if (!cK.Contains(keyPressProd.Key))
-                    {  
+                    {
                         Console.Clear();
                         Console.Write("Fel inmatning: ");
                         ChangeTextColorProducts("Red");
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("\nVänligen välj med tangenterna 1-6 eller Q.\n");
                         Console.ForegroundColor = ConsoleColor.Gray;
-
-                        StoreMethod.ProductDisplay(); //Visar produktutbudet
 
                         keyPressProd = Console.ReadKey();
                     }
@@ -124,14 +122,14 @@ void StoreMenu()
                             break;
                         }
 
-                        int keyPressed = int.Parse(keyPressProd.KeyChar.ToString());
+                        var keyPressed = int.Parse(keyPressProd.KeyChar.ToString());
                         if (keyPressed <= 3)
                         {
-                            StoreMethod.AddToCart(keyPressed, activeUser);
+                            StoreMethod.AddToCart(keyPressed, activeUser!);
                         }
                         else if (keyPressed <= 6)
                         {
-                            StoreMethod.RemoveFromCart(keyPressed, activeUser);
+                            StoreMethod.RemoveFromCart(keyPressed, activeUser!);
                         }
                     }
                 }
@@ -144,7 +142,7 @@ void StoreMenu()
                     Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
                     ChangeTextColorMenuShop("Green.Kundvagn");
 
-                    StoreMethod.PrintCart(activeUser); //Skriver ut kundvagnen
+                    StoreMethod.PrintCart(activeUser!); //Skriver ut kundvagnen
 
                     keyPressShopMenu = Console.ReadKey();
                     if (!cK.Contains(keyPressShopMenu.Key))
@@ -156,7 +154,7 @@ void StoreMenu()
                         Console.WriteLine("\nVänligen välj med tangenterna 1-6 eller Q.\n");
                         Console.ForegroundColor = ConsoleColor.Gray;
 
-                        StoreMethod.PrintCart(db.Customer.Find(p => p.IsActive = true)); //Skriver ut kundvagnen
+                        StoreMethod.PrintCart(db.Customer.Find(p => p.IsActive = true)!); //Skriver ut kundvagnen
 
                         keyPressShopMenu = Console.ReadKey();
                     }
@@ -174,10 +172,10 @@ void StoreMenu()
                     Console.Clear();
                     Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
                     ChangeTextColorMenuShop("Green.Kassa");
-                    
+
                     Console.WriteLine("* Dina varor * \n");
-                    StoreMethod.PrintCart(activeUser); //Skriver ut kundvagnen
-                    StoreMethod.SpecialDiscount(activeUser); //Skriver ut totalpriset och rabatt om kunden uppnått kraven
+                    StoreMethod.PrintCart(activeUser!); //Skriver ut kundvagnen
+                    StoreMethod.SpecialDiscount(activeUser!); //Skriver ut totalpriset och rabatt om kunden uppnått kraven
 
                     keyPressShopMenu = Console.ReadKey();
                     if (!cK.Contains(keyPressShopMenu.Key))

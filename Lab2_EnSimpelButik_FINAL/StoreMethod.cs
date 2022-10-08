@@ -14,7 +14,7 @@ public class StoreMethod
         else
         {
             var db = new DataSource();
-            customer.Cart.AddRange(new[] { db.Stock.FirstOrDefault(p => p.Id == prodId) });
+            customer.Cart.AddRange(new[] { db.Stock.FirstOrDefault(p => p.Id == prodId) }!);
         }
     }
     public static void RemoveFromCart(int prodId, Customer customer)
@@ -50,7 +50,7 @@ public class StoreMethod
         Console.ForegroundColor = ConsoleColor.Gray;
         foreach (var p in db.Stock)
         {
-            var addProd = String.Empty;
+            string addProd;
 
             if (p.Id == 1)
             {
@@ -72,7 +72,6 @@ public class StoreMethod
     {
         double totalSum = 0;
         double totalDiscount = 0;
-        double newTotalSum = 0;
         var discountRank = string.Empty;
         var discountPercent = 0;
         bool discount = false;
@@ -81,6 +80,7 @@ public class StoreMethod
             totalSum += p.Qty * p.Price;
         }
 
+        double newTotalSum;
         if (totalSum > 200 && totalSum < 500)
         {
             totalDiscount = 0.05 * totalSum;

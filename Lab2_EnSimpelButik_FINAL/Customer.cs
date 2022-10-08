@@ -3,17 +3,11 @@
 public class Customer
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    private bool _isActive;
-
-    public bool IsActive
-    {
-        get { return _isActive; }
-        set { _isActive = value; }
-    }
+    public string Name { get; private set; }
     public string Password { get; private set; }
+    public bool IsActive { get; set; }
 
-    private List<Product> _cart;
+    private readonly List<Product> _cart;
     public List<Product> Cart { get { return _cart; } }
 
     public Customer(string name, string password)

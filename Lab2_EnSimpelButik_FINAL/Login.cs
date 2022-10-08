@@ -3,24 +3,32 @@
 public class Login
 {
     //Field
-    public string Name { get; set; }
-    public string Password { get; set; }
+    public string? Name { get; set; }
+    public string? Password { get; set; }
 
     //Method
     public void LoginFields()
     {
-        Console.Write("Fyll i namn: ");
-        Name = Console.ReadLine();
+        do
+        {
+            Console.Write("Fyll i namn: ");
+            Name = Console.ReadLine()!;
 
-        Console.Write("Fyll i lösenord: ");
-        Password = Console.ReadLine();
+            Console.Write("Fyll i lösenord: ");
+            Password = Console.ReadLine()!;
 
-        Console.Clear();
+            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Password))
+            {
+                Console.WriteLine("\nOj, du glömde visst fylla i ett fält!");
+                Console.WriteLine("Tryck på valfri tangent för att försöka igen.");
+                Console.ReadKey();
+            }
+            Console.Clear();
+        } while (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Password));
     }
 
-    public Customer ReturnUserIfExists(DataSource db) //retunerar användaren om hen existerar annars null
+    public Customer? ReturnUserIfExists(DataSource db) //Retunerar användaren om hen existerar annars null
     {
-
         foreach (var user in db.Customer)
         {
             if (CheckIfUserNameExists(user.Name))
@@ -29,53 +37,61 @@ public class Login
                 {
                     user.IsActive = true;
                     Bool.LoginMenu = false; //Stänger login
-                    Bool.StoreMenu = true;  //Öppnar affären
+                    Bool.StoreMenu = true; //Öppnar affären
                     return user;
                 }
-                else
+
+                if (CheckIfUserPasswordExists(user.Password) == false)
                 {
                     var tryAgain = true;
                     while (tryAgain)
                     {
-                        Console.Clear();
-                        Console.WriteLine("Fel lösenord! Vänligen försök igen.\n");
-                        if (CheckIfUserPasswordExists(Console.ReadLine()))
+                        Console.WriteLine("Fel lösenord!\nTryck J för att försöka igen eller Q för att återgå till menyn.");
+                        var keyPress = Console.ReadKey();
+                        if (keyPress.Key == ConsoleKey.J)
                         {
-                            Bool.LoginMenu = false;
-                            Bool.StoreMenu = true;
-                            tryAgain = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Fel lösenord! tryck Q för att komma tillbaka till start.\n");
-                            Console.WriteLine("Annars är det bara att trycka valfri knapp och försöka igen\n");
-                            if (Console.ReadKey().Key == ConsoleKey.Q)
+                            Console.Clear();
+                            Console.WriteLine("* Försök igen *\n");
+                            Console.Write("Fyll i lösenord: ");
+                            Password = Console.ReadLine()!;
+                            Console.Clear();
+                            if (CheckIfUserPasswordExists(user.Password))
                             {
-                                tryAgain = false;
+                                user.IsActive = true;
+                                Bool.LoginMenu = false; //Stänger login
+                                Bool.StoreMenu = true; //Öppnar affären
+                                return user;
                             }
+                        }
+                        if (keyPress.Key == ConsoleKey.Q)
+                        {
+                            tryAgain = false;
+                            Console.Clear();
                         }
                     }
                 }
-
             }
         }
         Console.WriteLine("Användarnamnet kunde inte hittas. Vill du registrera dig?\n");
-        Console.WriteLine("Tryck J för att registrera dig eller valfri tangent för att återgå till menyn.");
-        var keyPress = Console.ReadKey();
-        if (keyPress.Key == ConsoleKey.J)
+        Console.WriteLine("Tryck J för att registrera dig eller Q för att återgå till menyn.");
+
+        var keyPres = Console.ReadKey();
+        if (keyPres.Key == ConsoleKey.J)
         {
             Console.Clear();
             Console.WriteLine("* Registrera ny kund *\n");
             LoginFields(); //Name, Password
-            var newCustomer = new Customer(Name, Password);
+            var newCustomer = new Customer(Name!, Password!);
             db.Customer.Add(newCustomer); //Spara till lista
             return newCustomer;
         }
-        else
+
+        if (keyPres.Key == ConsoleKey.Q)
         {
             Console.Clear();
-            return null;
         }
+
+        return null;
     }
 
     private bool CheckIfUserPasswordExists(string userPassword)
@@ -90,7 +106,8 @@ public class Login
 
     public static void VerifyQuit()
     {
-        Console.WriteLine("Avsluta, är du säker?\nTryck J för att avsluta eller valfri tangent för att gå tillbaka\n");
+        Console.WriteLine(
+            "Avsluta, är du säker?\nTryck J för att avsluta eller valfri tangent för att gå tillbaka\n");
         var verifyQuit = Console.ReadKey();
         if (verifyQuit.Key == ConsoleKey.J)
         {

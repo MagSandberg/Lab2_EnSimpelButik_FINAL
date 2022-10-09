@@ -1,6 +1,6 @@
 ﻿namespace Lab2_EnSimpelButik_FINAL;
 
-public class Login
+public class LoginMethod : DataSource //Ärver från DataSource för att uppdatera listan vid nya kunder.
 {
     //Field
     public string? Name { get; set; }
@@ -19,6 +19,8 @@ public class Login
 
             if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Password))
             {
+                Name = null;
+                Password = null;
                 Console.WriteLine("\nOj, du glömde visst fylla i ett fält!");
                 Console.WriteLine("Tryck på valfri tangent för att försöka igen.");
                 Console.ReadKey();
@@ -27,9 +29,21 @@ public class Login
         } while (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Password));
     }
 
-    public Customer? ReturnUserIfExists(DataSource db) //Retunerar användaren om hen existerar annars null
+    public static void WrongKeyPress(char key)
     {
-        foreach (var user in db.Customer)
+        Console.Clear();
+        Console.Write("Fel inmatning: ");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write(key);
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("\nVänligen välj mellan 1, 2 eller Q för att avsluta.\n");
+        Console.ForegroundColor = ConsoleColor.Gray;
+    }
+
+    public Customer? ReturnUserIfExists() //Retunerar användaren om hen existerar annars null
+    {
+        foreach (var user in Customer)
         {
             if (CheckIfUserNameExists(user.Name))
             {
@@ -72,25 +86,10 @@ public class Login
                 }
             }
         }
-        Console.WriteLine("Användarnamnet kunde inte hittas. Vill du registrera dig?\n");
-        Console.WriteLine("Tryck J för att registrera dig eller Q för att återgå till menyn.");
-
-        var keyPres = Console.ReadKey();
-        if (keyPres.Key == ConsoleKey.J)
-        {
-            Console.Clear();
-            Console.WriteLine("* Registrera ny kund *\n");
-            LoginFields(); //Name, Password
-            var newCustomer = new Customer(Name!, Password!);
-            db.Customer.Add(newCustomer); //Spara till lista
-            return newCustomer;
-        }
-
-        if (keyPres.Key == ConsoleKey.Q)
-        {
-            Console.Clear();
-        }
-
+        Console.WriteLine("Användarnamnet kunde inte hittas, du kanske vill registrera dig?\n");
+        Console.WriteLine("Tryck på valfri tangent för återgå till menyn.");
+        Console.ReadKey();
+        Console.Clear();
         return null;
     }
 
@@ -104,6 +103,31 @@ public class Login
         return name.Equals(Name);
     }
 
+    public void RegisterUser()
+    {
+        while (true)
+        {
+            bool exists = false;
+            LoginFields(); //Namn och lösenord
+            foreach (var cust in Customer)
+            {
+                if (Name == cust.Name)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists)
+            {
+                Console.WriteLine("Användarnamnet är upptaget, försök igen.");
+            }
+            else
+            {
+                Customer.Add(new Customer(Name!, Password!)); //Sparar kund till lista
+                break;
+            }
+        }
+    }
     public static void VerifyQuit()
     {
         Console.WriteLine(

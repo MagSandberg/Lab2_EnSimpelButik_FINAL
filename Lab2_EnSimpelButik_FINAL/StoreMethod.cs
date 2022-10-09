@@ -1,6 +1,6 @@
 ﻿namespace Lab2_EnSimpelButik_FINAL;
 
-public class StoreMethod
+public class StoreMethod //FIXA ARV
 {
     public static void AddToCart(int prodId, Customer customer)
     {

@@ -1,16 +1,17 @@
 ﻿using Lab2_EnSimpelButik_FINAL;
-using System.Reflection.Metadata;
 
 var db = new DataSource(); //Instansierar produkt-"databas"
-Login userLogin = new(); //Loggar in en användare
+LoginMethod userLogin = new(); //Loggar in en användare
 Customer? activeUser = null; //Instansierar en kund
 
-//Tillåtna tangenter under Loginmenyn
+//Tillåtna tangenter under LoginMenu
 System.ConsoleKey[] keyLogin = { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.Q };
-//Tillåtna tangenttryckningar i programmet
+
+//Tillåtna tangenttryckningar i StoreMenu
 System.ConsoleKey[] cK = { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.D3, ConsoleKey.D4, ConsoleKey.D5, ConsoleKey.D6, ConsoleKey.Q };
 
-ConsoleKeyInfo keyPress; //Switch-navigering
+//Navigering
+ConsoleKeyInfo keyPress; 
 var keyPressShopMenu = new ConsoleKeyInfo();
 var keyPressProd = new ConsoleKeyInfo();
 
@@ -26,17 +27,11 @@ void LoginMenu()
     {
         Console.WriteLine("1: Logga in | 2: Registrera ny kund | Q: Stäng program");
         keyPress = Console.ReadKey();
+        char pressedKey = keyPress.KeyChar;
         Console.CursorLeft = 0;
-
-
         if (!keyLogin.Contains(keyPress.Key))
         {
-            Console.Clear();
-            Console.Write("Fel inmatning: ");
-            ChangeTextColorLogin("Red");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\nVänligen välj mellan 1, 2 eller Q för att avsluta.\n");
-            Console.ForegroundColor = ConsoleColor.Gray;
+            LoginMethod.WrongKeyPress(pressedKey);
         }
         else
         {
@@ -44,17 +39,16 @@ void LoginMenu()
             {
                 case ConsoleKey.D1:
                     ChangeTextColorLogin("Green.Login");
-                    userLogin.LoginFields(); //Namn och lösenord
-                    activeUser = userLogin.ReturnUserIfExists(db);
+                    userLogin.LoginFields(); //Login
+                    activeUser = userLogin.ReturnUserIfExists();
                     break;
                 case ConsoleKey.D2:
                     ChangeTextColorLogin("Green.Register");
-                    userLogin.LoginFields(); //Namn och lösenord
-                    db.Customer.Add(new Customer(userLogin.Name!, userLogin.Password!)); //Sparar kund till lista
+                    userLogin.RegisterUser(); //Registrerar en användare
                     break;
                 case ConsoleKey.Q:
                     ChangeTextColorLogin("Green.Quit");
-                    Login.VerifyQuit(); //Verifierar om användaren vill stänga programmet
+                    LoginMethod.VerifyQuit(); //Verifierar om användaren vill stänga programmet
                     Console.Clear();
                     break;
             }
@@ -97,11 +91,8 @@ void StoreMenu()
                     Console.Clear();
                     Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
                     ChangeTextColorMenuShop("Green.Handla");
-
                     StoreMethod.ProductDisplay(); //Visar produktutbudet
-
                     keyPressProd = Console.ReadKey();
-
                     if (!cK.Contains(keyPressProd.Key))
                     {
                         Console.Clear();
@@ -110,7 +101,6 @@ void StoreMenu()
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("\nVänligen välj med tangenterna 1-6 eller Q.\n");
                         Console.ForegroundColor = ConsoleColor.Gray;
-
                         keyPressProd = Console.ReadKey();
                     }
                     else
@@ -121,7 +111,6 @@ void StoreMenu()
                             Console.Clear();
                             break;
                         }
-
                         var keyPressed = int.Parse(keyPressProd.KeyChar.ToString());
                         if (keyPressed <= 3)
                         {
@@ -225,11 +214,6 @@ void ChangeTextColorLogin(string color)
 {
     switch (color)
     {
-        case "Red":
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(keyPress.KeyChar);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            break;
         case "Green.Login":
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("   -------- ");

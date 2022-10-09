@@ -25,8 +25,53 @@ public class LoginMethod : DataSource //Ärver från DataSource för att uppdate
                 Console.WriteLine("Tryck på valfri tangent för att försöka igen.");
                 Console.ReadKey();
             }
+
             Console.Clear();
+
         } while (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Password));
+    }
+
+    public void RegisterUser()
+    {
+        LoginMenuActiveColor("Register");
+
+        while (true)
+        {
+            bool exists = false;
+
+            LoginFields(); //Namn och lösenord
+
+            foreach (var cust in Customer)
+            {
+                if (Name == cust.Name)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists)
+            {
+                Console.WriteLine("Användarnamnet är upptaget, försök igen.");
+            }
+            else
+            {
+                Customer.Add(new Customer(Name!, Password!)); //Sparar kund till lista
+                break;
+            }
+        }
+    }
+    public static void VerifyQuit()
+    {
+        LoginMenuActiveColor("Quit");
+
+        Console.WriteLine("Avsluta, är du säker?\nTryck J för att avsluta eller valfri tangent för att gå tillbaka\n");
+        var verifyQuit = Console.ReadKey();
+        if (verifyQuit.Key == ConsoleKey.J)
+        {
+            Console.Clear();
+            Environment.Exit(0);
+        }
+        Console.Clear();
     }
 
     public static void WrongKeyPress(char key)
@@ -93,50 +138,38 @@ public class LoginMethod : DataSource //Ärver från DataSource för att uppdate
         return null;
     }
 
-    private bool CheckIfUserPasswordExists(string userPassword)
+    private bool CheckIfUserPasswordExists(string? userPassword)
     {
-        return userPassword.Equals(Password);
+        return userPassword!.Equals(Password);
     }
 
-    public bool CheckIfUserNameExists(string name)
+    public bool CheckIfUserNameExists(string? name)
     {
-        return name.Equals(Name);
+        return name!.Equals(Name);
     }
 
-    public void RegisterUser()
+    public static void LoginMenuActiveColor(string color)
     {
-        while (true)
+        switch (color)
         {
-            bool exists = false;
-            LoginFields(); //Namn och lösenord
-            foreach (var cust in Customer)
-            {
-                if (Name == cust.Name)
-                {
-                    exists = true;
-                    break;
-                }
-            }
-            if (exists)
-            {
-                Console.WriteLine("Användarnamnet är upptaget, försök igen.");
-            }
-            else
-            {
-                Customer.Add(new Customer(Name!, Password!)); //Sparar kund till lista
+            case "Login":
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("   -------- ");
+                Console.ForegroundColor = ConsoleColor.Gray;
                 break;
-            }
-        }
-    }
-    public static void VerifyQuit()
-    {
-        Console.WriteLine(
-            "Avsluta, är du säker?\nTryck J för att avsluta eller valfri tangent för att gå tillbaka\n");
-        var verifyQuit = Console.ReadKey();
-        if (verifyQuit.Key == ConsoleKey.J)
-        {
-            Console.Clear();
-            Environment.Exit(0);
+            case "Register":
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("              --------------------- ");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                break;
+            case "Quit":
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("                                      -----------------");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                break;
+            default:
+                Console.ForegroundColor = ConsoleColor.Gray;
+                break;
         }
     }
 }

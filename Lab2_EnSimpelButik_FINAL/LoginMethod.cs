@@ -37,18 +37,9 @@ public class LoginMethod : DataSource //Ärver från DataSource för att uppdate
 
         while (true)
         {
-            bool exists = false;
-
             LoginFields(); //Namn och lösenord
 
-            foreach (var cust in Customer)
-            {
-                if (Name == cust.Name)
-                {
-                    exists = true;
-                    break;
-                }
-            }
+            var exists = Customer.Any(cust => Name == cust.Name);
             if (exists)
             {
                 Console.WriteLine("Användarnamnet är upptaget, försök igen.");
@@ -88,53 +79,56 @@ public class LoginMethod : DataSource //Ärver från DataSource för att uppdate
 
     public Customer? ReturnUserIfExists() //Retunerar användaren om hen existerar annars null
     {
-        foreach (var user in Customer)
+        var toMenu = false;
+        foreach (var user in Customer.Where(user => CheckIfUserNameExists(user.Name)))
         {
-            if (CheckIfUserNameExists(user.Name))
+            if (CheckIfUserPasswordExists(user.Password))
             {
-                if (CheckIfUserPasswordExists(user.Password))
-                {
-                    user.IsActive = true;
-                    Bool.LoginMenu = false; //Stänger login
-                    Bool.StoreMenu = true; //Öppnar affären
-                    return user;
-                }
+                user.IsActive = true;
+                Bool.LoginMenu = false; //Stänger login
+                Bool.StoreMenu = true; //Öppnar affären
+                return user;
+            }
 
-                if (CheckIfUserPasswordExists(user.Password) == false)
+            if (CheckIfUserPasswordExists(user.Password) == false)
+            {
+                var tryAgain = true;
+                while (tryAgain)
                 {
-                    var tryAgain = true;
-                    while (tryAgain)
+                    Console.WriteLine("Fel lösenord!\nTryck J för att försöka igen eller valfri tangent för att återgå till menyn.");
+                    var keyPress = Console.ReadKey();
+                    if (keyPress.Key == ConsoleKey.J)
                     {
-                        Console.WriteLine("Fel lösenord!\nTryck J för att försöka igen eller Q för att återgå till menyn.");
-                        var keyPress = Console.ReadKey();
-                        if (keyPress.Key == ConsoleKey.J)
+                        Console.Clear();
+                        Console.WriteLine("* Försök igen *\n");
+                        Console.Write("Fyll i lösenord: ");
+                        Password = Console.ReadLine()!;
+                        Console.Clear();
+                        if (CheckIfUserPasswordExists(user.Password))
                         {
-                            Console.Clear();
-                            Console.WriteLine("* Försök igen *\n");
-                            Console.Write("Fyll i lösenord: ");
-                            Password = Console.ReadLine()!;
-                            Console.Clear();
-                            if (CheckIfUserPasswordExists(user.Password))
-                            {
-                                user.IsActive = true;
-                                Bool.LoginMenu = false; //Stänger login
-                                Bool.StoreMenu = true; //Öppnar affären
-                                return user;
-                            }
+                            user.IsActive = true;
+                            Bool.LoginMenu = false; //Stänger login
+                            Bool.StoreMenu = true; //Öppnar affären
+                            return user;
                         }
-                        if (keyPress.Key == ConsoleKey.Q)
-                        {
-                            tryAgain = false;
-                            Console.Clear();
-                        }
+                    }
+                    if (keyPress.Key != ConsoleKey.J)
+                    {
+                        tryAgain = false;
+                        toMenu = true;
+                        Console.Clear();
                     }
                 }
             }
         }
-        Console.WriteLine("Användarnamnet kunde inte hittas, du kanske vill registrera dig?\n");
-        Console.WriteLine("Tryck på valfri tangent för återgå till menyn.");
-        Console.ReadKey();
-        Console.Clear();
+
+        if (toMenu == false)
+        {
+            Console.WriteLine("Användarnamnet kunde inte hittas, du kanske vill registrera dig?\n");
+            Console.WriteLine("Tryck på valfri tangent för återgå till menyn.");
+            Console.ReadKey();
+            Console.Clear();
+        }
         return null;
     }
 

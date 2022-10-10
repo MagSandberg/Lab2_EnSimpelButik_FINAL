@@ -32,14 +32,11 @@ public class StoreMethod : DataSource
     }
     public static void PrintCart(Customer cust)
     {
-        double totalSum = 0;
         foreach (var p in cust.Cart!)
         {
-            Console.WriteLine($"Produkt: {p.Name} | Styckpris: {p.Price} SEK | Antal: {p.Qty} | Totalpris: {string.Format("{0:0.00}", p.Qty * p.Price)} SEK");
-            totalSum += p.Qty * p.Price;
+            Console.WriteLine($"Produkt: {p.Name} | Styckpris: {p.Price} SEK | Antal: {p.Qty} | Totalpris: {p.Qty * p.Price:0.00} SEK");
         }
-
-        Console.WriteLine($"\nPris för hela kundvagnen: {string.Format("{0:0.00}", totalSum)} SEK");
+        Product.TotalSum(cust);
     }
     public static void ProductDisplay(DataSource db)
     {
@@ -66,7 +63,6 @@ public class StoreMethod : DataSource
             Console.WriteLine($"{addProd} {p.Name} / Pris: {p.Price} SEK");
         }
     }
-
     public static void SpecialDiscount(Customer cust)
     {
         double totalDiscount = 0;
@@ -108,20 +104,21 @@ public class StoreMethod : DataSource
 
         if (discount)
         {
+            PrintCart(cust);
             Console.WriteLine($"\nSom {discountRank}kund får du {discountPercent}% rabatt!");
             Console.WriteLine($"\nDin rabatt: {Math.Round(totalDiscount)} SEK");
             Console.WriteLine($"Du betalar endast {string.Format("{0:0.00}", Math.Round(newTotalSum))} SEK");
         }
         else
         {
+            PrintCart(cust);
             Console.WriteLine($"Pris för din beställning: {string.Format("{0:0.00}", totalSum)} SEK");
         }
     }
-
     public static void VerifyLogout(DataSource db)
     {
         ShopMenuActiveColor("Logout");
-        Console.WriteLine("Logga ut, är du säker?\nTryck J för att avsluta eller valfri tangent för att gå tillbaka\n");
+        Console.WriteLine("Är du säker?\nTryck J för att avsluta eller valfri tangent för att gå tillbaka\n");
 
         var verifyQuit = Console.ReadKey();
         if (verifyQuit.Key == ConsoleKey.J)
@@ -135,19 +132,14 @@ public class StoreMethod : DataSource
         }
         Console.Clear();
     }
-    public static void WrongKeyPress(char key)
+    public static void PressAnyKey()
     {
-        Console.Clear();
-        Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut\n");
-        Console.Write("Fel inmatning: ");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write(key);
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("\nTryck valfri tangent för att återgå till menyn.");
         Console.ForegroundColor = ConsoleColor.Gray;
-        Console.WriteLine("\nVänligen välj mellan 1, 2, 3 eller Q.\nTryck på valfri tangent för att gå vidare.");
         Console.ReadKey();
         Console.Clear();
     }
-
     public static void ShopMenuActiveColor(string color)
     {
         switch (color)

@@ -132,6 +132,8 @@ void StoreMenu()
                     if (!keyStoreMenu.Contains(keyPressShopMenu.Key))
                     {
                         Console.Clear();
+                        Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut\n");
+
                         Console.Write("Fel inmatning: ");
                         ChangeTextColorProducts("Red");
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -165,6 +167,7 @@ void StoreMenu()
                     if (!keyStoreMenu.Contains(keyPressShopMenu.Key))
                     {
                         Console.Clear();
+                        Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut\n");
                         Console.Write("Fel inmatning: ");
                         ChangeTextColorProducts("Red");
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -182,6 +185,7 @@ void StoreMenu()
                 }
                 break;
             case ConsoleKey.Q:
+                Console.WriteLine("1: Handla | 2: Kundvagn | 3: Till kassan | Q: Logga ut");
                 StoreMethod.VerifyLogout(db);
                 break;
         }

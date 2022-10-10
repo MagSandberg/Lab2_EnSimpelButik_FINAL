@@ -17,11 +17,6 @@ public class Customer
         _cart = new List<Product>();
     }
 
-    public Customer()
-    {
-
-    }
-
     public override string ToString()
     {
         var customerCart = string.Empty;

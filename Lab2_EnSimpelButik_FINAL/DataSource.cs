@@ -16,9 +16,9 @@ public class DataSource
 
         Customer.AddRange(new[]
         {
-            new Customer("Knatte", "123") { Id = 1, IsActive = false, Cart = { } },
-            new Customer("Fnatte", "321") { Id = 2, IsActive = false, Cart = { } },
-            new Customer("Tjatte", "213") { Id = 3, IsActive = false, Cart = { } },
+            new Customer("Knatte", "123") { Id = 1, IsActive = false},
+            new Customer("Fnatte", "321") { Id = 2, IsActive = false},
+            new Customer("Tjatte", "213") { Id = 3, IsActive = false},
         });
     }
 }

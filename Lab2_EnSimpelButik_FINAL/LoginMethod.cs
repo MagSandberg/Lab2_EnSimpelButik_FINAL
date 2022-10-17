@@ -51,6 +51,62 @@ public class LoginMethod : DataSource //Ärver från DataSource för att uppdate
             }
         }
     }
+
+    public Customer? ReturnUserIfExists() //Retunerar användaren om hen existerar annars null
+    {
+        var toMenu = false;
+        var db = new DataSource();
+        foreach (var user in db.Customer.Where(user => user.Name==Name))
+        {
+            if (user.CheckIfUserPasswordExists(Password))
+            {
+                user.IsActive = true;
+                Bool.LoginMenu = false; //Stänger login
+                Bool.StoreMenu = true; //Öppnar affären
+                return user;
+            }
+            else
+            {
+                var tryAgain = true;
+                while (tryAgain)
+                {
+                    Console.WriteLine("Fel lösenord!\nTryck J för att försöka igen eller valfri tangent för att återgå till menyn.");
+                    var keyPress = Console.ReadKey();
+                    if (keyPress.Key == ConsoleKey.J)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("* Försök igen *\n");
+                        Console.Write("Fyll i lösenord: ");
+                        Password = Console.ReadLine()!;
+                        Console.Clear();
+                        if (user.CheckIfUserPasswordExists(Password))
+                        {
+                            user.IsActive = true;
+                            Bool.LoginMenu = false; //Stänger login
+                            Bool.StoreMenu = true; //Öppnar affären
+                        }
+                    }
+                    if (keyPress.Key != ConsoleKey.J)
+                    {
+                        tryAgain = false;
+                        toMenu = true;
+                        Console.Clear();
+                    }
+                }
+            }
+        }
+
+        if (toMenu == false)
+        {
+            Console.WriteLine("Användarnamnet kunde inte hittas, du kanske vill registrera dig?\n");
+            Console.WriteLine("Tryck på valfri tangent för återgå till menyn.");
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        return null;
+    }
+
     public static void VerifyQuit()
     {
         LoginMenuActiveColor("Quit");
@@ -75,71 +131,6 @@ public class LoginMethod : DataSource //Ärver från DataSource för att uppdate
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("\nVänligen välj mellan 1, 2 eller Q för att avsluta.\n");
         Console.ForegroundColor = ConsoleColor.Gray;
-    }
-
-    public Customer? ReturnUserIfExists() //Retunerar användaren om hen existerar annars null
-    {
-        var toMenu = false;
-        foreach (var user in Customer.Where(user => CheckIfUserNameExists(user.Name)))
-        {
-            if (CheckIfUserPasswordExists(user.Password))
-            {
-                user.IsActive = true;
-                Bool.LoginMenu = false; //Stänger login
-                Bool.StoreMenu = true; //Öppnar affären
-                return user;
-            }
-
-            if (CheckIfUserPasswordExists(user.Password) == false)
-            {
-                var tryAgain = true;
-                while (tryAgain)
-                {
-                    Console.WriteLine("Fel lösenord!\nTryck J för att försöka igen eller valfri tangent för att återgå till menyn.");
-                    var keyPress = Console.ReadKey();
-                    if (keyPress.Key == ConsoleKey.J)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("* Försök igen *\n");
-                        Console.Write("Fyll i lösenord: ");
-                        Password = Console.ReadLine()!;
-                        Console.Clear();
-                        if (CheckIfUserPasswordExists(user.Password))
-                        {
-                            user.IsActive = true;
-                            Bool.LoginMenu = false; //Stänger login
-                            Bool.StoreMenu = true; //Öppnar affären
-                            return user;
-                        }
-                    }
-                    if (keyPress.Key != ConsoleKey.J)
-                    {
-                        tryAgain = false;
-                        toMenu = true;
-                        Console.Clear();
-                    }
-                }
-            }
-        }
-
-        if (toMenu == false)
-        {
-            Console.WriteLine("Användarnamnet kunde inte hittas, du kanske vill registrera dig?\n");
-            Console.WriteLine("Tryck på valfri tangent för återgå till menyn.");
-            Console.ReadKey();
-            Console.Clear();
-        }
-        return null;
-    }
-
-    private bool CheckIfUserPasswordExists(string? userPassword)
-    {
-        return userPassword!.Equals(Password);
-    }
-
-    public bool CheckIfUserNameExists(string? name)
-    {
-        return name!.Equals(Name);
     }
 
     public static void LoginMenuActiveColor(string color)
